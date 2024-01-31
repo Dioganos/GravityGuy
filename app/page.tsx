@@ -4,17 +4,20 @@ import { useState, useEffect, useRef } from 'react';
 
 const Game = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [velocity, setVelocity] = useState({ x: 5, y: 0 });
+  const [velocity, setVelocity] = useState({ x: 3, y: 0 });
   const [gravity, setGravity] = useState(1);
   const [isJumping, setIsJumping] = useState(false);
   const [isGrounded, setIsGrounded] = useState(true);
   const [isGroundedX, setIsGroundedX] = useState(true);
-
+  const [cameraOffset, setCameraOffset] = useState(0); // Kamera ofseti
+  const [camPos, setCamPos] = useState(0); // Kamera ofseti
+  const [camSpeed, setCamSpeed] = useState(3); // Kamera ofseti
+  const [moveCam, setMoveCam] = useState(false); // Kamera ofseti
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.code === 'Space' && (!isJumping && isGrounded)) {
         setGravity(-gravity); // Yer çekimini tersine çevir
-        setVelocity({ x: 5, y: gravity * 5 }); // Zıplama hızı
+        setVelocity({ x: 3, y: gravity * 5 }); // Zıplama hızı
         setPosition((prevPos) => ({
           ...prevPos,
           x: prevPos.x,
@@ -42,6 +45,15 @@ const Game = () => {
         console.log(position.y);
       }
 
+      if (position.x >= window.innerWidth / 16) {
+        setMoveCam(true);
+        setCamPos(position.x);
+        setVelocity((oldVel) => ({...oldVel,x:0,y:oldVel.y}));
+      }
+      if(moveCam){
+        setCamPos(camPos + camSpeed);
+        setCameraOffset(camPos - window.innerWidth / 2);
+      }
       setPosition((prevPosition) => ({
         ...prevPosition,
         x: prevPosition.x + velocity.x,
@@ -65,7 +77,9 @@ const Game = () => {
         height: '600px',
         width: '100%',
         background: 'url("https://media3.giphy.com/media/66jJ49FPwSRJ5Pt59T/giphy.gif")', // Arkaplan gif
+        backgroundPosition: `${-cameraOffset * 1000}px 0`,
         overflow: 'hidden',
+        left: `${-cameraOffset / (1080 * 10)}px`,
       }}
     >
       <img
