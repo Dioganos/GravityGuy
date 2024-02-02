@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
-
-
+import { useState, useEffect } from 'react';
+import ReactAudioPlayer from 'react-audio-player';
 interface GravityBox {
   top?: string;
   bottom?: string;
@@ -63,6 +62,20 @@ const Game = () => {
     setbottomLimit(bottom);
     settopLimit(top);
   }
+
+  const playAudio = () => {
+    // Audio elemanına erişim sağlama ve tip belirtme
+    const audioElement = document.getElementById('music') as HTMLAudioElement | null;
+
+    // Audio elemanının varlığını kontrol etme ve çalma
+    if (audioElement) {
+      audioElement.play(); // Audio'yu oynat
+    }
+  };
+
+  useEffect(() => {
+    playAudio(); // Sayfa yüklendiğinde müziği otomatik çal
+  }, []);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -250,6 +263,13 @@ const Game = () => {
           height: '200px',
           transform: `scaleY(${scale})`,
         }}
+      />
+
+      <audio
+        id='music'
+        src="/game.mp3"
+        controls
+        hidden
       />
     </div>
   );
